@@ -1,0 +1,20 @@
+{
+  "name": "RobloxShorts-Gate",
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": { "$className": "Workspace" },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Film": {
+        "$className": "Folder",
+        "Shared": { "$path": "src/shared" },
+        "Films": { "$path": "src/films" },
+        "Settings": { "$path": "src/Settings.luau" },
+        "Assets": { "$path": "build/models/FilmAssets.rbxm" },
+        "Episode": { "$className": "StringValue", "$properties": { "Value": "gate" } }
+      }
+    },
+    "ServerScriptService": { "$className": "ServerScriptService", "Bootstrap": { "$path": "src/server/Bootstrap.server.luau" } },
+    "StarterPlayer": { "$className": "StarterPlayer", "StarterPlayerScripts": { "$className": "StarterPlayerScripts", "Film": { "$path": "src/client/Film.client.luau" } } }
+  }
+}

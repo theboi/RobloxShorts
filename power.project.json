@@ -1,0 +1,20 @@
+{
+  "name": "RobloxShorts-Power",
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": { "$className": "Workspace", "$properties": { "Gravity": 196.2 } },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Film": {
+        "$className": "Folder",
+        "Shared": { "$path": "src/shared" },
+        "Films": { "$path": "src/films" },
+        "Settings": { "$path": "src/Settings.luau" },
+        "Assets": { "$path": "build/models/FilmAssets.rbxm" },
+        "Episode": { "$className": "StringValue", "$properties": { "Value": "power" } }
+      }
+    },
+    "ServerScriptService": { "$className": "ServerScriptService", "Bootstrap": { "$path": "src/server/Bootstrap.server.luau" } },
+    "StarterPlayer": { "$className": "StarterPlayer", "StarterPlayerScripts": { "$className": "StarterPlayerScripts", "Film": { "$path": "src/client/Film.client.luau" } } }
+  }
+}
