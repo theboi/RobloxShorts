@@ -1,6 +1,6 @@
 # The Monster at the School Gate
 
-Production draft 1. Target: 2:45. Complete episode; mild horror, no gore.
+Production draft 1. Current shot timeline: 2:44. Complete episode; mild horror, no gore.
 Cast: Nia (narrator), Sam and Bea (friends), Principal Sol, Bristle (guardian).
 Creature contract: Bristle detects nonhuman organisms and restrains them. The cape
 controls Sol while spread; pinning its fabric interrupts that control temporarily.

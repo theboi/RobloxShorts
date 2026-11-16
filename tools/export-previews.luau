@@ -26,6 +26,7 @@ local function export(model, path, camera, target, title)
 				shape = "Head"
 			end
 			local face = item:FindFirstChild("Face")
+			local lettering = item:FindFirstChild("Lettering")
 			table.insert(parts, {
 				name = item.Name,
 				size = vector(item.Size),
@@ -36,6 +37,7 @@ local function export(model, path, camera, target, title)
 				color = { item.Color.R, item.Color.G, item.Color.B },
 				shape = shape,
 				face = if face then #face:GetChildren() - 1 else nil,
+				text = if lettering then lettering.Text.Text else nil,
 			})
 		end
 	end

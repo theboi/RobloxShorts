@@ -23,17 +23,17 @@ for later Studio animation work. These are film actors, not player avatars.
 
 ## Delivery steps
 
-- [ ] Save both scripts with timed beats, clues, resolutions, and prop requirements.
-- [ ] Research style and APIs; document references and original asset provenance.
-- [ ] Install project-local Lune, Rojo, and StyLua without changing system tools.
-- [ ] Test timeline boundaries, seeking, interpolation, and invalid shot data first.
-- [ ] Implement timeline sampling and character/prop/camera playback.
-- [ ] Build the school, film cast, guardian, cape, helmet, evidence, and rescue props.
-- [ ] Test generated models for required actors, geometry, pivots, joints, and faces.
-- [ ] Author complete shot sequences for both stories and subtitle/cue exports.
-- [ ] Build two standalone places and an asset gallery; inspect serialized content.
-- [ ] Document Studio playback, capture controls, and remaining visual/audio checks.
-- [ ] Run checks, commit, pull, and push.
+- [x] Save both scripts with timed beats, clues, resolutions, and prop requirements.
+- [x] Research style and APIs; document references and original asset provenance.
+- [x] Install project-local Lune, Rojo, and StyLua without changing system tools.
+- [x] Test timeline boundaries, seeking, interpolation, and invalid shot data first.
+- [x] Implement timeline sampling and character/prop/camera playback.
+- [x] Build the school, film cast, guardian, cape, helmet, evidence, and rescue props.
+- [x] Test generated models for required actors, geometry, pivots, joints, and faces.
+- [x] Author complete shot sequences for both stories and subtitle/cue exports.
+- [x] Build two standalone places and an asset gallery; inspect serialized content.
+- [x] Document Studio playback, capture controls, and remaining visual/audio checks.
+- [x] Run checks and push first implementation milestone; final handoff follows review fixes.
 
 ## Verification boundary
 

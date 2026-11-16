@@ -37,14 +37,14 @@ local function face(head, monster)
 		"Mouth", E.UDim2.fromScale(0.5, 0.35), E.UDim2.fromScale(0.25, 0.6)
 	mouth.BackgroundTransparency, mouth.TextScaled = 1, true
 	mouth.Text, mouth.TextColor3, mouth.FontFace =
-		"ᴗ",
+		")",
 		P.ink,
 		E.Font.new(
 			"rbxasset://fonts/families/GothamSSm.json",
 			E.Enum.FontWeight.Bold,
 			E.Enum.FontStyle.Normal
 		)
-	mouth.Parent = gui
+	mouth.Rotation, mouth.Parent = 90, gui
 end
 
 local function motor(model, torso, limb, pivot)
@@ -94,11 +94,41 @@ function Characters.create(parent, name, spec)
 				model,
 				"Head",
 				"Fringe" .. i,
-				V(0.46, 0.46 + (i % 2) * 0.12, 0.35),
+				V(0.46, 0.22 + (i % 2) * 0.05, 0.35),
 				C(-1.02 + i * 0.34, 4.9, -0.47) * E.CFrame.Angles(0, 0, math.rad(-12 + i * 4)),
 				spec.hair or P.hair,
 				"Wedge"
 			)
+		end
+		if spec.hairStyle == "puffs" then
+			for _, side in { -1, 1 } do
+				detail(
+					model,
+					"Head",
+					"Hair Puff" .. side,
+					V(0.85, 0.9, 0.85),
+					C(side * 1.05, 4.95, 0.25),
+					spec.hair or P.hair,
+					"Ball"
+				)
+			end
+		elseif spec.hairStyle == "ponytail" then
+			detail(model, "Head", "Ponytail Tie", V(0.55, 0.3, 0.3), C(0, 4.85, 0.65), spec.accent, "Ball")
+			detail(model, "Head", "Ponytail", V(0.75, 1.1, 0.6), C(0, 4.5, 0.9), spec.hair or P.hair, "Ball")
+		elseif spec.hairStyle == "bob" then
+			for _, side in { -1, 1 } do
+				detail(
+					model,
+					"Head",
+					"Bob Side" .. side,
+					V(0.3, 0.8, 0.9),
+					C(side * 0.95, 4.6, 0.16),
+					spec.hair or P.hair
+				)
+			end
+		elseif spec.hairStyle == "cap" then
+			detail(model, "Head", "Cap", V(2.2, 0.45, 1.3), C(0, 5.1, 0.05), spec.accent, "Ball")
+			detail(model, "Head", "Cap Brim", V(1.7, 0.12, 0.7), C(0, 5, -0.7), spec.accent)
 		end
 		detail(model, "Torso", "Collar", V(1.02, 0.17, 1.06), C(0, 3.92, 0), spec.accent)
 		detail(model, "Torso", "Shirt Hem", V(2.03, 0.13, 1.03), C(0, 2.08, 0), spec.accent)
@@ -193,11 +223,12 @@ function Characters.build(parent)
 		Eli = { shirt = P.teal, pants = P.navy, skin = P.skin, accent = P.gold },
 		Dad = { shirt = P.navy, pants = P.hair, skin = P.skin, accent = P.metal, coat = true, hair = P.metal },
 		Lens = { shirt = P.ink, pants = P.ink, skin = P.skinDark, accent = P.red, helmet = true },
-		Maya = { shirt = P.gold, pants = P.navy, skin = P.skinDark, accent = P.white },
+		Maya = { shirt = P.gold, pants = P.navy, skin = P.skinDark, accent = P.white, hairStyle = "bob" },
 		Noah = { shirt = P.blue, pants = P.ink, skin = P.skin, accent = P.white },
-		Nia = { shirt = P.teal, pants = P.navy, skin = P.skinDark, accent = P.cream },
-		Sam = { shirt = P.brick, pants = P.ink, skin = P.skin, accent = P.gold },
-		Bea = { shirt = P.purple, pants = P.navy, skin = P.skin, accent = P.cream },
+		Ada = { shirt = P.brick, pants = P.navy, skin = P.skinDark, accent = P.white, hairStyle = "ponytail" },
+		Nia = { shirt = P.teal, pants = P.navy, skin = P.skinDark, accent = P.cream, hairStyle = "puffs" },
+		Sam = { shirt = P.brick, pants = P.ink, skin = P.skin, accent = P.gold, hairStyle = "cap" },
+		Bea = { shirt = P.purple, pants = P.navy, skin = P.skin, accent = P.cream, hairStyle = "ponytail" },
 		Sol = { shirt = P.blue, pants = P.blue, skin = P.skinDark, accent = P.gold },
 		Bristle = {
 			shirt = P.purple,

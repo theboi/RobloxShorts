@@ -6,7 +6,7 @@ for _, folder in { "School", "Cast", "Props" } do
 	assert(assets:FindFirstChild(folder), "Missing asset group: " .. folder)
 end
 local cast = assets.Cast
-for _, name in { "Eli", "Dad", "Lens", "Maya", "Noah", "Nia", "Sam", "Bea", "Sol", "Bristle" } do
+for _, name in { "Eli", "Dad", "Lens", "Maya", "Noah", "Ada", "Nia", "Sam", "Bea", "Sol", "Bristle" } do
 	local actor = cast:FindFirstChild(name)
 	assert(actor and actor.PrimaryPart, "Missing pivot for " .. name)
 	assert(actor:FindFirstChild("Head"), "Missing head for " .. name)

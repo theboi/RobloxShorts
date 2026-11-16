@@ -36,14 +36,19 @@ function Scene.create(assets, parent)
 	folder.Name, folder.Parent = "FilmScene", parent
 	local school, cast, props = assets.School:Clone(), assets.Cast:Clone(), assets.Props:Clone()
 	school.Parent, cast.Parent, props.Parent = folder, folder, folder
-	local self = { folder = folder, school = school, cast = {}, props = {}, mechanisms = {} }
+	local self = { folder = folder, school = school, cast = {}, props = {}, mechanisms = {}, lights = {} }
+	for _, item in school:GetDescendants() do
+		if item:IsA("PointLight") then
+			table.insert(self.lights, item)
+		end
+	end
 	for _, model in cast:GetChildren() do
 		self.cast[model.Name] = remember(model)
 	end
 	for _, model in props:GetChildren() do
 		self.props[model.Name] = remember(model)
 	end
-	for _, name in { "Shutter", "Landing", "Blinds", "CorridorDoor", "Partition", "Cage" } do
+	for _, name in { "Shutter", "Landing", "Blinds", "CorridorDoor", "Partition", "Cage", "EntryGate" } do
 		self.mechanisms[name] = remember(school:FindFirstChild(name))
 	end
 	return self
@@ -51,6 +56,9 @@ end
 
 function Scene.apply(self, sample)
 	local shot, alpha, t = sample.shot, sample.alpha, sample.elapsed
+	for _, light in self.lights do
+		light.Enabled = not shot.night
+	end
 	local actorFrames = {}
 	for name, entry in self.cast do
 		local state = shot.actors[name]
@@ -81,6 +89,9 @@ function Scene.apply(self, sample)
 						localCF.Position.Y,
 						localCF.Position.Z + sway + spread * row * 0.3
 					)
+					if shot.capePinned then
+						offset = V(offset.X, offset.Y, 0)
+					end
 					item.part.CFrame = frame * C(offset) * localCF.Rotation
 				end
 			end
@@ -90,8 +101,17 @@ function Scene.apply(self, sample)
 	end
 	for name, entry in self.mechanisms do
 		local frame = entry.root
+		local visible = true
+		if name == "EntryGate" then
+			local to = shot.gateAngle or 85
+			local from = shot.gateFrom or to
+			frame = frame * E.CFrame.Angles(0, math.rad(from + (to - from) * alpha), 0)
+		end
 		if name == "Shutter" then
-			frame = C(0, if shot.shutterClosed then 9 * (1 - alpha) else 9, -20)
+			local amount = (shot.shutterFrom or shot.shutter or 0)
+				+ ((shot.shutter or 0) - (shot.shutterFrom or shot.shutter or 0)) * alpha
+			frame = C(0, 9 * (1 - amount), -20)
+			visible = amount > 0
 		end
 		if name == "Landing" then
 			frame = entry.root * C(0, -(shot.landingDrop or 0) * alpha, 0)
@@ -105,11 +125,18 @@ function Scene.apply(self, sample)
 		if name == "Partition" then
 			-- Two banks approach a central gap; each bank's bind x positions are sampled.
 			place(entry, frame, true)
-			local openness = if shot.partitionClosed then 1 - alpha else 1
+			local closed = (shot.partitionFrom or shot.partition or 0)
+				+ ((shot.partition or 0) - (shot.partitionFrom or shot.partition or 0)) * alpha
+			local openness = 1 - closed
 			for _, item in entry.parts do
 				if item.part.Name == "Fold" then
 					item.part.CFrame = frame
-						* C(item.bind.Position.X * (1 - openness * 0.9), item.bind.Position.Y, 0)
+						* C(
+							item.bind.Position.X * (1 - openness * 0.8)
+								+ (if item.bind.Position.X < 0 then -1 else 1) * 14 * openness,
+							item.bind.Position.Y,
+							0
+						)
 				end
 			end
 			continue
@@ -117,7 +144,7 @@ function Scene.apply(self, sample)
 		if name == "Cage" and shot.cageOpen then
 			frame = entry.root * C(0, 10, 0)
 		end
-		place(entry, frame, true)
+		place(entry, frame, visible)
 	end
 	local lens = self.cast.Lens.model
 	for _, part in lens:GetChildren() do

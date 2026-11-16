@@ -167,7 +167,7 @@ local function render()
 		Motion.position(shot.camera, sample.alpha),
 		Vector3.new(table.unpack(shot.camera.target))
 	)
-	Lighting.ClockTime = if shot.night then 0 else 14
+	Lighting.ClockTime = shot.clockTime or 14
 	Lighting.Brightness = if shot.night then 0.7 else 2.2
 	Lighting.Ambient = if shot.night then Color3.fromRGB(30, 46, 65) else Color3.fromRGB(110, 115, 130)
 	Lighting.OutdoorAmbient = Color3.fromRGB(135, 141, 157)

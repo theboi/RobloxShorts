@@ -12,6 +12,18 @@ function Props.build(parent)
 		G.root(result)
 		return result
 	end
+	local camera = model("SecurityCamera")
+	G.part(camera, "Housing", V(1.1, 0.55, 0.8), C(0, 5, 0), P.white)
+	G.part(camera, "Lens", V(0.4, 0.4, 0.15), C(0, 5, -0.5), P.ink, "Ball")
+	G.part(camera, "Bracket", V(0.15, 0.65, 0.5), C(0, 5.4, 0.3), P.metal)
+	local cloth = model("CleaningCloth")
+	G.part(cloth, "Cotton", V(1.2, 0.85, 0.08), C(0, 5, 0), P.cream)
+	local ice = model("IcePack")
+	G.part(ice, "Bag", V(0.9, 0.35, 0.8), C(0, 0, 0), P.blue, "Ball")
+	G.part(ice, "Cap", V(0.3, 0.2, 0.3), C(0, 0.2, 0), P.white)
+	local lesson = model("StartingSlip")
+	local paperPart = G.part(lesson, "Paper", V(1.8, 1.2, 0.04), C(0, 3, 0), P.white)
+	G.label(paperPart, "TRY AGAIN?\n━━━━━━", nil, P.ink)
 	local bench = model("Bench")
 	for z = -0.7, 0.7, 0.7 do
 		G.part(bench, "SeatSlat", V(7, 0.2, 0.5), C(0, 1.7, z), P.hair).Material = E.Enum.Material.Wood

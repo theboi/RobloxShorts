@@ -11,7 +11,19 @@ OUT = ROOT / "build/previews"
 
 
 def mesh(shape):
-    if shape in {"Ball", "Head"}:
+    if shape == "Head":
+        vertices, faces = [], []
+        for y, radius in [(-.5, .38), (-.43, .5), (.43, .5), (.5, .38)]:
+            for col in range(16):
+                angle = math.tau * col / 16
+                vertices.append((radius * math.cos(angle), y, radius * math.sin(angle)))
+        for row in range(3):
+            for col in range(16):
+                a, b = row * 16 + col, row * 16 + (col + 1) % 16
+                faces.append((a, b, b + 16, a + 16))
+        faces += [tuple(range(15, -1, -1)), tuple(range(48, 64))]
+        return np.array(vertices), faces
+    if shape == "Ball":
         vertices, faces = [], []
         for row in range(9):
             latitude = math.pi * row / 8
@@ -39,7 +51,7 @@ def mesh(shape):
 
 def render(path, width=540, height=960):
     data = json.loads(path.read_text())
-    eye, target = np.array(data["camera"]), np.array(data["target"])
+    eye, target = np.array(data["camera"], dtype=float), np.array(data["target"], dtype=float)
     forward = target - eye
     forward /= np.linalg.norm(forward)
     right = np.cross(forward, np.array([0., 1., 0.]))
@@ -82,7 +94,7 @@ def render(path, width=540, height=960):
             color = tuple(int(min(255, component * 255 * shade)) for component in part["color"])
             clipped = clip(local[list(face)])
             if len(clipped) >= 3:
-                polygons.append((float(np.mean([p[2] for p in clipped])), project(clipped), color))
+                polygons.append((project(clipped), color, [p[2] for p in clipped]))
         if part.get("face"):
             # Face features are flat discs, projected in the same front surface plane.
             for index in range(part["face"]):
@@ -96,11 +108,36 @@ def render(path, width=540, height=960):
                 faceworld = (np.array(points) * np.array(part["size"])) @ basis.T + np.array(part["position"])
                 faceview = (faceworld - eye) @ view.T
                 if np.min(faceview[:, 2]) > .15:
-                    polygons.append((float(np.mean(faceview[:, 2])) - .01, project(faceview), (245, 190, 70) if monster else (20, 25, 35)))
-    image = Image.new("RGB", (width, height), (205, 220, 231))
+                    polygons.append((project(faceview), (245, 190, 70) if monster else (20, 25, 35), list(faceview[:, 2] - .005)))
+    pixels = np.full((height, width, 3), (205, 220, 231), dtype=np.uint8)
+    depth = np.full((height, width), np.inf)
+    # Depth testing matters: large walls must not paint over nearer actors merely
+    # because their centre is nearer to the camera than the actor's centre.
+    for points, color, depths in polygons:
+        for index in range(1, len(points) - 1):
+            triangle = np.array([points[0], points[index], points[index + 1]])
+            zs = np.array([depths[0], depths[index], depths[index + 1]])
+            lo = np.maximum(np.floor(triangle.min(axis=0)).astype(int), (0, 0))
+            hi = np.minimum(np.ceil(triangle.max(axis=0)).astype(int), (width - 1, height - 1))
+            if np.any(lo > hi):
+                continue
+            x, y = np.meshgrid(np.arange(lo[0], hi[0] + 1) + .5, np.arange(lo[1], hi[1] + 1) + .5)
+            (ax, ay), (bx, by), (cx, cy) = triangle
+            denominator = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy)
+            if abs(denominator) < 1e-9:
+                continue
+            wa = ((by - cy) * (x - cx) + (cx - bx) * (y - cy)) / denominator
+            wb = ((cy - ay) * (x - cx) + (ax - cx) * (y - cy)) / denominator
+            wc = 1 - wa - wb
+            inside = (wa >= 0) & (wb >= 0) & (wc >= 0)
+            inverse_depth = wa / zs[0] + wb / zs[1] + wc / zs[2]
+            z = np.divide(1., inverse_depth, out=np.full_like(inverse_depth, np.inf), where=inverse_depth > 0)
+            region = depth[lo[1]:hi[1] + 1, lo[0]:hi[0] + 1]
+            visible = inside & (z < region)
+            region[visible] = z[visible]
+            pixels[lo[1]:hi[1] + 1, lo[0]:hi[0] + 1][visible] = color
+    image = Image.fromarray(pixels)
     draw = ImageDraw.Draw(image)
-    for _, points, color in sorted(polygons, key=lambda item: -item[0]):
-        draw.polygon(points, fill=color)
     draw.rectangle((0, 0, width, 65), fill=(22, 30, 45))
     font = ImageFont.load_default(size=18)
     draw.text((16, 10), data["title"], font=font, fill="white")

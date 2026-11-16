@@ -7,6 +7,10 @@ function Motion.position(state, alpha: number): Vector3
 	local a = state.position or { 0, 0, 0 }
 	local b = state.to or a
 	local t = math.clamp(alpha, 0, 1)
+	if state.travel then
+		assert(state.travel[2] > state.travel[1], "Motion interval must have positive duration")
+		t = math.clamp((t - state.travel[1]) / (state.travel[2] - state.travel[1]), 0, 1)
+	end
 	if state.ease == "smooth" then
 		t = t * t * (3 - 2 * t)
 	end
@@ -40,6 +44,8 @@ function Motion.pose(pose: string, seconds: number, alpha: number)
 			* rotation(if pose == "run" then -12 else -3, 0, 0)
 	elseif pose == "point" then
 		joints["Right Arm"] = rotation(-85, 0, 0)
+	elseif pose == "lift" then
+		joints["Left Arm"], joints["Right Arm"] = rotation(-155, 0, -10), rotation(-155, 0, 10)
 	elseif pose == "reach" or pose == "shield" then
 		joints["Left Arm"], joints["Right Arm"] = rotation(-100, 0, -25), rotation(-100, 0, 25)
 	elseif pose == "scared" then
@@ -49,10 +55,13 @@ function Motion.pose(pose: string, seconds: number, alpha: number)
 		body = C(0, -0.85, 0) * rotation(-12, 0, 0)
 		joints["Right Leg"], joints["Left Leg"] = rotation(75, 0, 0), rotation(-35, 0, 0)
 	elseif pose == "fall" then
-		body = C(0, -2.4 * alpha, 0) * rotation(-85 * alpha, 0, 0)
+		local landed = C(0, 1.1, 0) * rotation(-90, 0, 0) * C(0, -3, 0)
+		body = E.CFrame.identity:Lerp(landed, alpha)
 		joints["Left Arm"], joints["Right Arm"] = rotation(-70, 0, -35), rotation(-70, 0, 35)
 	elseif pose == "prone" then
-		body = C(0, -2.4, 0) * rotation(-85, 0, 0)
+		body = C(0, 1.1, 0) * rotation(-90, 0, 0) * C(0, -3, 0)
+	elseif pose == "supine" then
+		body = C(0, 1.1, 0) * rotation(90, 0, 0) * C(0, -3, 0)
 	elseif pose == "pounce" then
 		body = C(0, math.sin(alpha * math.pi) * 3, 0) * rotation(-30, 0, 0)
 		joints["Left Arm"], joints["Right Arm"] = rotation(-110, 0, -20), rotation(-110, 0, 20)
@@ -84,7 +93,6 @@ function Motion.applyActor(model: Model, state, seconds: number, alpha: number)
 		if part:IsA("BasePart") then
 			local bind = part:GetAttribute("Bind")
 			local cf = (bones[part:GetAttribute("Bone")] or body) * bind
-			part.Size = (part:GetAttribute("BaseSize") or part.Size) -- initialized once below
 			if not part:GetAttribute("BaseSize") then
 				part:SetAttribute("BaseSize", part.Size)
 			end
@@ -97,8 +105,9 @@ function Motion.applyActor(model: Model, state, seconds: number, alpha: number)
 	end
 	local face = model.Head:FindFirstChild("Face")
 	if face then
-		face.Mouth.Text = ({ scared = "O", angry = "—", sad = "⌢", happy = "ᴗ", neutral = "—" })[state.face or "happy"]
-			or "ᴗ"
+		face.Mouth.Text = ({ scared = "O", angry = "—", sad = "(", happy = ")", neutral = "—" })[state.face or "happy"]
+			or ")"
+		face.Mouth.Rotation = if state.face == "happy" or state.face == "sad" then 90 else 0
 	end
 	return rootFrame
 end

@@ -27,16 +27,13 @@ for _, film in { require("../src/films/Power"), require("../src/films/Gate") } d
 				shot.text
 			)
 		)
-		table.insert(
-			records,
-			{
-				id = shot.id,
-				start = timeline.starts[i],
-				duration = shot.duration,
-				text = shot.text,
-				cue = shot.cue,
-			}
-		)
+		table.insert(records, {
+			id = shot.id,
+			start = timeline.starts[i],
+			duration = shot.duration,
+			text = shot.text,
+			cue = shot.cue,
+		})
 	end
 	fs.writeFile(`build/editorial/{film.id}.srt`, table.concat(subtitles, "\n"))
 	fs.writeFile(

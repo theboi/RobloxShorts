@@ -1,7 +1,7 @@
 --!strict
 local S = if script then require(script.Parent.Parent.Shared.Shot) else require("../shared/Shot")
 local a, p, c, s = S.actor, S.prop, S.camera, S.make
-return {
+local film = {
 	id = "power",
 	title = "My Power Stops When You Look at Me",
 	story = "stories/01-my-power-stops-when-you-look.md",
@@ -10,16 +10,20 @@ return {
 			"tryouts",
 			6,
 			"At superhero tryouts, Maya lifted a bench. Noah floated above it.",
-			c(-3, 6, -18, 0, 3, 0),
-			{ Maya = a(-3, 0, 0, "reach"), Noah = a(3, 2, 0) },
-			{ Bench = p(-3, 4, -1) }
+			c(-1, 6, -21, 0, 3, 0),
+			{ Maya = a(-3, 0, 0, "lift"), Noah = a(3, 2, 0) },
+			{ Bench = p(-3, 4, 1) }
 		),
 		s(
 			"watched",
 			5,
 			"I stood on the starting line. Everyone watched. Nothing happened.",
 			c(0, 4, -9, 0, 3, 0),
-			{ Eli = a(0, 0, 0, "strain", nil, 0, "sad"), Maya = a(-5, 0, -2), Noah = a(5, 0, -2) }
+			{
+				Eli = a(0, 0, 0, "strain", nil, 0, "sad"),
+				Maya = a(-5, 0, -2, "idle", nil, -112),
+				Noah = a(5, 0, -2, "idle", nil, 112),
+			}
 		),
 		s(
 			"rule",
@@ -51,7 +55,7 @@ return {
 			"I wanted to be alone. Behind me, Dad covered a security camera with his cloth.",
 			c(-7, 6, -11, -5, 4, 0),
 			{ Eli = a(-3, 0, 0, "walk", { 4, 0, -5 }), Dad = a(-7, 0, 0, "reach") },
-			{ CoatShield = p(-7, 3, 0) },
+			{ SecurityCamera = p(-7, 0, 0), CleaningCloth = p(-7, 0, -0.65) },
 			{ cue = "cloth" }
 		),
 		s(
@@ -61,7 +65,7 @@ return {
 			c(4, 6, -5, 0, 3, -17),
 			{ Lens = a(0, 0, -22, "walk", { 0, 0, -15 }, 180) },
 			{},
-			{ cue = "impact" }
+			{ gateFrom = 0, gateAngle = 85, cue = "impact" }
 		),
 		s(
 			"core",
@@ -149,7 +153,7 @@ return {
 			5,
 			"Across the yard, the damaged landing began to sink. One student was still on it.",
 			c(9, 8, 6, 17, 5, 21),
-			{ Maya = a(17, 3.4, 21, "scared", { 17, 3.1, 21 }, 0, "scared") },
+			{ Ada = a(17, 3.4, 21, "scared", { 17, 3.1, 21 }, 0, "scared") },
 			{},
 			{ landingDrop = 0.3, cue = "creak" }
 		),
@@ -206,7 +210,7 @@ return {
 			5,
 			'"Eli. Stop watching me." I looked toward the student.',
 			c(4, 5, -8, 0, 3, -5),
-			{ Eli = a(0, 0, -5, "idle", nil, 120, "scared"), Dad = a(0, 0, -12, "shield") }
+			{ Eli = a(0, 0, -5, "idle", nil, -147, "scared"), Dad = a(0, 0, -12, "shield") }
 		),
 		s(
 			"covered",
@@ -221,8 +225,8 @@ return {
 			"catch",
 			5,
 			"Behind the coat, I moved. Caught her. Carried her through the exit.",
-			c(9, 8, 5, 17, 4, 19),
-			{ Eli = a(10, 0, 12, "run", { 17, 0.4, 19 }), Maya = a(17, 3.2, 21, "fall", nil, 0, "scared") },
+			c(10, 11, 7, 17, 6, 19),
+			{ Eli = a(10, 0, 12, "run", { 17, 0.4, 19 }), Ada = a(17, 3.2, 21, "fall", nil, 0, "scared") },
 			{},
 			{ landingDrop = 2.6, cue = "whoosh" }
 		),
@@ -245,10 +249,11 @@ return {
 				Dad = a(-2, 0, -24, "kneel"),
 				Maya = a(3, 0, -24),
 				Noah = a(7, 0, -24),
-				Lens = a(0, 0, -15, "angry"),
+				Ada = a(9, 0, -24),
+				Lens = a(0, 0, -15, "idle", nil, 180, "angry"),
 			},
 			{},
-			{ shutterClosed = true, cue = "impact" }
+			{ shutterFrom = 0, shutter = 1, cue = "impact" }
 		),
 		s(
 			"after",
@@ -256,7 +261,7 @@ return {
 			'Later, Dad sat with an ice pack on his knee. "You could have told me."',
 			c(-4, 5, -10, 0, 3, 0),
 			{ Dad = a(-1.5, 0, 0, "sit"), Eli = a(2, 0, 0) },
-			{ Bench = p(0, 0, 0) }
+			{ Bench = p(0, 0, 0), IcePack = p(-1.5, 1.6, -0.7) }
 		),
 		s(
 			"tryagain",
@@ -264,7 +269,7 @@ return {
 			'He handed me the slip. On the back, a starting line. "Try again?"',
 			c(1, 4, -9, 0, 3, 0),
 			{ Dad = a(-2, 0, 0, "reach"), Eli = a(2, 0, 0) },
-			{ RejectionSlip = p(0, 0, -1) }
+			{ StartingSlip = p(0, 0, -1) }
 		),
 		s(
 			"onestep",
@@ -272,9 +277,40 @@ return {
 			'He watched. I took one ordinary step. "That is where I started," he said.',
 			c(2, 5, -12, 0, 3, 0, { 1, 5, -11 }),
 			{
-				Dad = a(-2, 0, 0, "idle", nil, 0, "happy"),
+				Dad = a(-2, 0, 0, "idle", nil, -90, "happy"),
 				Eli = a(2, 0, 0, "walk", { 2, 0, -0.7 }, 0, "happy"),
 			}
 		),
 	},
 }
+
+-- Explicit sequence defaults are expanded once, so every shot remains independently seekable.
+local byId = {}
+for _, shot in film.shots do
+	byId[shot.id] = shot
+end
+local blackout = false
+local evening = false
+for _, shot in film.shots do
+	if shot.id == "arrival" then
+		evening = true
+	end
+	if shot.id == "after" then
+		evening = false
+	end
+	if shot.id == "nightvision" then
+		blackout = true
+	end
+	if shot.id == "after" then
+		blackout = false
+	end
+	shot.night = blackout
+	shot.clockTime = if evening then 19 else 14
+	if blackout then
+		shot.lenses = "green"
+	end
+end
+byId.blindspot.actors.Eli.travel = { 0.45, 0.5 }
+byId.burst.actors.Dad.travel = { 0.4, 0.45 }
+byId.catch.actors.Eli.travel = { 0.35, 0.4 }
+return film

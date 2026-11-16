@@ -34,6 +34,15 @@ function School.build(parent)
 	local school = G.model(parent, "School")
 	block(school, "Ground", { 160, 0.6, 130 }, { 0, -0.6, 10 }, P.grass, E.Enum.Material.Grass)
 	block(school, "Courtyard", { 58, 0.25, 45 }, { 0, -0.125, 0 }, P.concrete, E.Enum.Material.Concrete)
+	for _, x in { -23, 23 } do
+		for _, z in { -14, 15 } do
+			block(school, "LampPost", { 0.25, 9, 0.25 }, { x, 4.5, z }, P.navy)
+			local lantern = block(school, "Lantern", { 1.1, 0.45, 1.1 }, { x, 9, z }, P.cream)
+			local light = E.Instance.new("PointLight")
+			light.Name, light.Range, light.Brightness, light.Shadows = "CourtyardLight", 48, 3, true
+			light.Color, light.Parent = P.cream, lantern
+		end
+	end
 	for x = -24, 24, 8 do
 		block(school, "Paving Joint", { 0.05, 0.02, 42 }, { x, 0.02, 0 }, P.metal)
 	end
@@ -60,6 +69,15 @@ function School.build(parent)
 		end
 	end
 	local shutter = G.model(school, "Shutter")
+	local gate = G.model(school, "EntryGate")
+	G.root(gate)
+	for x = 0.5, 17.5, 1 do
+		block(gate, "GateBar", { 0.15, 6, 0.15 }, { x, 3, 0 }, P.navy)
+	end
+	for _, y in { 0.5, 5.5 } do
+		block(gate, "GateRail", { 18, 0.2, 0.2 }, { 9, y, 0 }, P.navy)
+	end
+	G.pivot(gate, C(-9, 0, -20))
 	G.root(shutter)
 	for y = 0.5, 8, 0.5 do
 		block(shutter, "SteelSlat", { 19, 0.45, 0.3 }, { 0, y, 0 }, P.metal, E.Enum.Material.Metal)
@@ -114,16 +132,18 @@ function School.build(parent)
 	block(gym, "CrashMat", { 10, 0.5, 8 }, { 50, 0.25, 14 }, P.blue)
 	local partition = G.model(school, "Partition")
 	G.root(partition)
-	for x = 0.6, 17, 1.2 do
-		block(
-			partition,
-			"Fold",
-			{ 1.1, 10, 0.5 },
-			{ x, 5, 0 },
-			if math.floor(x) % 2 == 0 then P.navy else P.blue
-		)
+	for _, side in { -1, 1 } do
+		for x = 0.55, 17.05, 1.1 do
+			block(
+				partition,
+				"Fold",
+				{ 1.1, 10, 0.5 },
+				{ side * x, 5, 0 },
+				if math.floor(x) % 2 == 0 then P.navy else P.blue
+			)
+		end
 	end
-	G.pivot(partition, C(32, 0, 12))
+	G.pivot(partition, C(50, 0, 12))
 	block(gym, "PartitionTrack", { 36, 0.04, 0.15 }, { 50, 0.03, 12 }, P.metal)
 	local cage = G.model(school, "Cage")
 	G.root(cage)

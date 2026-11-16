@@ -4,3 +4,5 @@ captures/
 .DS_Store
 *.rbxl.lock
 *.rbxlx.lock
+__pycache__/
+*.pyc

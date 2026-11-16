@@ -1,7 +1,7 @@
 # My Power Stops When You Look at Me
 
-Production draft 1. Target: 2:30. Complete episode; hopeful superhero mystery.
-Cast: Eli (student), Dad (school caretaker), Lens (masked villain), two classmates.
+Production draft 1. Current shot timeline: 2:35. Complete episode; hopeful superhero mystery.
+Cast: Eli (student), Dad (school caretaker), Lens (masked villain), Maya, Noah, and Ada.
 Power contract: Eli can move at super speed only outside direct sight or a live
 camera view. Recordings watched later do not count. Ordinary movement is unaffected.
 Dad has the same limitation but has trained to produce brief bursts while watched.
@@ -165,6 +165,8 @@ I take one ordinary step.
 
 ## Staging and clues
 
+- Tryouts run late; establish evening and courtyard lamps before the attack. The
+  blackout switches those lamps off, rather than inexplicably turning off the sun.
 - Show Dad covering a lens before the attack; it becomes evidence, not an unexplained
   new ability. His watched bursts are visibly painful and extremely limited.
 - Show helmet cameras and night-vision lenses clearly. Dad's coat blocks every

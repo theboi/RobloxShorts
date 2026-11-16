@@ -1,7 +1,7 @@
 --!strict
 local S = if script then require(script.Parent.Parent.Shared.Shot) else require("../shared/Shot")
 local a, p, c, s = S.actor, S.prop, S.camera, S.make
-return {
+local film = {
 	id = "gate",
 	title = "The Monster at the School Gate",
 	story = "stories/02-the-monster-at-the-school-gate.md",
@@ -129,7 +129,7 @@ return {
 			c(-44, 5, 22, -45, 3, 8),
 			{ Sol = a(-45, 0, 8, "idle", nil, 180), Nia = a(-48, 0, 19, "scared", nil, 0, "scared") },
 			{ Cape = { attach = "Sol", position = { 0, 0, 0 } } },
-			{ cue = "click" }
+			{ doorClosed = true, cue = "click" }
 		),
 		s(
 			"caught",
@@ -138,7 +138,7 @@ return {
 			c(-46, 5, 18, -45, 3, 8),
 			{ Sol = a(-45, 0, 8, "point", nil, 180), Sam = a(-42, 0, 20, "scared") },
 			{ Cape = { attach = "Sol", position = { 0, 0, 0 } } },
-			{ capeReach = 1 }
+			{ doorClosed = true, capeReach = 1 }
 		),
 		s(
 			"blinds",
@@ -156,7 +156,7 @@ return {
 			c(-48, 4.8, 4, -48, 3, 12),
 			{ Sol = a(-48, 0, 12, "strain", nil, 0, "sad") },
 			{ Cape = { attach = "Sol", position = { 0, 0, 0 } } },
-			{ sunlight = true }
+			{ blindsOpen = true, sunlight = true, doorClosed = true }
 		),
 		s("run", 5, "We ran. Sam slammed the corridor door behind us.", c(-44, 5, -16, -45, 3, -4), {
 			Nia = a(-48, 0, -1, "run", { -48, 0, -9 }),
@@ -218,18 +218,18 @@ return {
 			5,
 			"The partition clamped onto the fabric. Sol fell onto the mat.",
 			c(54, 7, 22, 50, 3, 13),
-			{ Sol = a(50, 0, 14, "fall"), Nia = a(56, 0, 16, "scared"), Bristle = a(59, 0, 20, "reach") },
+			{ Sol = a(50, 0.5, 14, "fall"), Nia = a(56, 0, 16, "scared"), Bristle = a(59, 0, 20, "reach") },
 			{ Cape = p(50, 0, 12) },
-			{ partitionClosed = true, capePinned = true, cageOpen = true, cue = "impact" }
+			{ partitionFrom = 0, partition = 1, capePinned = true, cageOpen = true, cue = "impact" }
 		),
 		s(
 			"separate",
 			5,
 			"The cape kept pulling without him. The guardian pounced.",
 			c(56, 6, 23, 50, 3, 13),
-			{ Sol = a(50, 0, 16, "prone"), Bristle = a(59, 0, 20, "pounce", { 51, 0, 13 }) },
+			{ Sol = a(50, 0.5, 16, "prone"), Bristle = a(59, 0, 20, "pounce", { 51, 0, 13 }) },
 			{ Cape = p(50, 0, 12) },
-			{ partitionClosed = true, capePinned = true, cageOpen = true, cue = "rustle" }
+			{ partition = 1, capePinned = true, cageOpen = true, cue = "rustle" }
 		),
 		s(
 			"silence",
@@ -238,7 +238,7 @@ return {
 			c(58, 4.8, 20, 56, 3, 16),
 			{ Nia = a(56, 0, 16, "scared"), Sam = a(59, 0, 16, "scared"), Bea = a(62, 0, 16, "scared") },
 			{},
-			{ partitionClosed = true, cageOpen = true }
+			{ partition = 1, cageOpen = true }
 		),
 		s(
 			"monday",
@@ -256,13 +256,13 @@ return {
 			5,
 			"Then it rolled onto its back. He scratched its belly.",
 			c(7, 5, -28, 0, 2, -20),
-			{ Bristle = a(0, 0, -20, "prone", nil, 0, "happy"), Sol = a(3, 0, -20, "pet", nil, 90, "happy") }
+			{ Bristle = a(0, 0, -20, "supine", nil, 0, "happy"), Sol = a(3, 0, -20, "pet", nil, 90, "happy") }
 		),
 		s(
 			"cheese",
 			6,
 			"Bea offered her sandwich. This time, it waited until she took the cheese out.",
-			c(5, 5, -30, 0, 3, -20),
+			c(7, 8, -37, 0, 4, -20),
 			{
 				Bristle = a(0, 0, -20, "kneel", nil, 0, "happy"),
 				Bea = a(3, 0, -23, "reach", nil, 0, "happy"),
@@ -273,3 +273,11 @@ return {
 		),
 	},
 }
+
+-- The parasite turns independently to reach ahead of Sol, rather than trailing his back.
+for _, shot in film.shots do
+	if shot.id == "gymarrival" or shot.id == "bait" then
+		shot.props.Cape.yaw = 180
+	end
+end
+return film
